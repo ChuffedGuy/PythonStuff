@@ -108,7 +108,7 @@ def background():
         screen.blit(sky_surface, rect)
 
     for rect in ground_rect_list:
-        rect.x -= 6
+        rect.x -= 4
         if rect.right <= 0:
             rect.left = 800
         screen.blit(ground_surface, rect)
