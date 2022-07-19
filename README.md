@@ -1,4 +1,4 @@
-# PythonStuff
+# Welcome to my PythonStuff
 ## This is my repository for random code that I write in Python
-### I wrote some of these files by following tutorials and some on my own (This is specified in the file name)
+Projects marked with (tutorial) were written by following a tutorial. I will try to store project files in a folder with all of the necessary assets, that way you can run the code and see how it works.
 
