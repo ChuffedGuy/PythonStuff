@@ -122,7 +122,7 @@ def solve_movement(rect, tiles, direction, x_accel, x_decel, y_accel, velocity, 
             collide_top = True
             velocity[1] = 0
 
-    #Jump and Wall Jump (can be moved to a new Function)
+    # jump and wall Jump (can be moved to a new Function)
     if direction[1] == -1:
         if collide_bottom == True:
             velocity[1] = -15
@@ -132,6 +132,7 @@ def solve_movement(rect, tiles, direction, x_accel, x_decel, y_accel, velocity, 
         elif collide_left == True:
             velocity[0] = 10.6066
             velocity[1] = -10.6066
+    # slow player down when sliding on a wall
     if collide_right or collide_left and not collide_bottom:
         if velocity[1] > 1:
             velocity[1] = 1
