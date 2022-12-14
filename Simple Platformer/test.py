@@ -5,15 +5,18 @@ clock = pygame.time.Clock()
 from pygame.locals import *
 pygame.init()
 
-pygame.display.set_caption('test')
+pygame.display.set_caption('Platformer Game')
 
 WINDOW_SIZE = (900, 600)
 
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
+game_font = pygame.font.Font('Pixeltype.ttf', 175)
+
 player = pygame.Rect(100, 100, 40, 40)
 
-def load_map(path): # load map from .txt file
+# load map from .txt file
+def load_map(path):
     f = open(path + '.txt', 'r')
     data = f.read()
     f.close()
@@ -25,27 +28,30 @@ def load_map(path): # load map from .txt file
 
 game_map = load_map('map')
 
-def draw_map(game_map): # append tile rects to list and draw them
+# append tile rects to list and draw them
+def draw_map(game_map):
     tile_rects = []
     y = 0
     for layer in game_map:
         x = 0
         for tile in layer:
-            if tile != '0':
+            if tile != '.':
                 tile_rects.append(pygame.Rect(x*16, y*16, 16, 16))
-                pygame.draw.rect(screen, (255, 0, 0), pygame.Rect( x*16, y*16, 16, 16))
+                pygame.draw.rect(screen, 'firebrick1', pygame.Rect( x*16, y*16, 16, 16))
             x += 1
         y += 1
     return tile_rects
-    
-def get_collisions(rect, tiles): # find collisions between given character and tiles
+
+# find collisions between given character and tiles   
+def get_collisions(rect, tiles):
     collisions = []
     for tile in tiles:
         if rect.colliderect(tile):
             collisions.append(tile)
     return collisions
 
-def get_input(): # get player input and make array with x and y direction with player direction
+# get player input and make array with x and y direction with player direction
+def get_input():
     left = False
     right = False
     up = False
@@ -116,7 +122,7 @@ def solve_movement(rect, tiles, direction, x_accel, x_decel, y_accel, velocity, 
             collide_top = True
             velocity[1] = 0
 
-    #Jump and Wall Jump (can be moved to a new Function #
+    #Jump and Wall Jump (can be moved to a new Function)
     if direction[1] == -1:
         if collide_bottom == True:
             velocity[1] = -15
@@ -144,25 +150,21 @@ coin_rects = [pygame.Rect(180, 240, 20, 20), pygame.Rect(220, 240, 20, 20),
 num_coins = len(coin_rects)
 coins_collected = 0
 
-while True: # game loop
+win_surf = game_font.render('You Win!', False, 'white')
+win_rect = win_surf.get_rect(center = (450, 300))
 
-    screen.fill((0, 0, 0)) # clear screen
-    tile_rects = draw_map(game_map) # append tiles in map to a list
-    direction = get_input() # get player input and return direction of player movement
+win = False
+
+while True: # game loop (runs every frame)
+    # clear screen
+    screen.fill('black')
+    # append tiles in map to a list and draw them
+    tile_rects = draw_map(game_map)
+    # get player input and return direction of player movement
+    direction = get_input()
+    # use the direction of player to move the player and handle collisions
     player = solve_movement(player, tile_rects, direction, 0.5, 0.8, 1, velocity, 10)
-    pygame.draw.rect(screen, (255,255,255), player)
-    coin_collisions = get_collisions(player, coin_rects)
-
-    for coin in coin_collisions:
-        coin_rects.remove(coin)
-        coins_collected += 1
-        if coins_collected == num_coins:
-            print('you win!')
-        
-    for coin in coin_rects:
-        pygame.draw.rect(screen, (255, 255, 255), coin)
-
-    # character infinite loop #
+    # character loops back when exiting the screen
     if player.top > WINDOW_SIZE[1]:
         player.bottom = 0
     if player.bottom < 0:
@@ -171,7 +173,24 @@ while True: # game loop
         player.right = 0
     if player.right < 0:
         player.left = WINDOW_SIZE[0]
+    # draw the player
+    pygame.draw.rect(screen, 'aquamarine', player)
 
+    if win == True:
+        screen.blit(win_surf, win_rect)
+
+    # tracks coin collection and win condition
+    coin_collisions = get_collisions(player, coin_rects)
+    for coin in coin_collisions:
+        coin_rects.remove(coin)
+        coins_collected += 1
+        if coins_collected == num_coins:
+            win = True
+        
+    for coin in coin_rects:
+        pygame.draw.rect(screen, 'khaki1', coin)
+
+    # allows player to exit the game
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
